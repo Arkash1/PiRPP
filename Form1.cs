@@ -56,7 +56,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 1: Сумма 10 чисел ===
+        // ЗАДАЧА 1: Сумма 10 чисел
         TabPage Task1()
         {
             var tab = MakeTab("1. Сумма", "Посчитать сумму", Color.LightSteelBlue,
@@ -82,7 +82,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 2: Максимум и минимум ===
+        // ЗАДАЧА 2: Максимум и минимум
         TabPage Task2()
         {
             var tab = MakeTab("2. Мин/Макс", "Сгенерировать", Color.LightGreen,
@@ -112,7 +112,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 3: Чётные / нечётные ===
+        // ЗАДАЧА 3: Чётные / нечётные
         TabPage Task3()
         {
             var tab = MakeTab("3. Чёт/Нечёт", "Сгенерировать", Color.LightCoral,
@@ -139,7 +139,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 4: Реверс ===
+        // ЗАДАЧА 4: Реверс
         TabPage Task4()
         {
             var tab = MakeTab("4. Реверс", "Перевернуть", Color.Khaki,
@@ -167,7 +167,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 5: Сдвиг вправо ===
+        // ЗАДАЧА 5: Сдвиг вправо
         TabPage Task5()
         {
             var tab = MakeTab("5. Сдвиг", "Сдвинуть вправо", Color.LightSkyBlue,
@@ -192,7 +192,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // === ЗАДАЧА 6: Дубликаты ===
+        // ЗАДАЧА 6: Дубликаты
         TabPage Task6()
         {
             var tab = MakeTab("6. Дубликаты", "Подсчитать", Color.Plum,
@@ -222,7 +222,7 @@ namespace ArrayTasks
             return tab;
         }
 
-        // --- Вспомогательные методы ---
+        // Вспомогательные методы 
         int[] Parse(string text)
         {
             try
@@ -247,3 +247,4 @@ namespace ArrayTasks
         }
     }
 } 
+
