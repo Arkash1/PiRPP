@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -8,676 +7,243 @@ namespace ArrayTasks
 {
     public class Form1 : Form
     {
-        // Главные элементы управления
-        private TabControl tabControl;
+        private TabControl tabs;
 
         public Form1()
         {
-            this.Text = "Задачи с массивами — C# Windows Forms";
-            this.Size = new Size(750, 600);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Font = new Font("Segoe UI", 10);
+            Text = "Задачи с массивами";
+            Size = new Size(700, 550);
+            StartPosition = FormStartPosition.CenterScreen;
 
-            tabControl = new TabControl();
-            tabControl.Dock = DockStyle.Fill;
+            tabs = new TabControl { Dock = DockStyle.Fill };
 
-            // Создаём вкладки для каждой задачи
-            tabControl.TabPages.Add(CreateTask1Tab());
-            tabControl.TabPages.Add(CreateTask2Tab());
-            tabControl.TabPages.Add(CreateTask3Tab());
-            tabControl.TabPages.Add(CreateTask4Tab());
-            tabControl.TabPages.Add(CreateTask5Tab());
-            tabControl.TabPages.Add(CreateTask6Tab());
+            tabs.TabPages.Add(Task1());
+            tabs.TabPages.Add(Task2());
+            tabs.TabPages.Add(Task3());
+            tabs.TabPages.Add(Task4());
+            tabs.TabPages.Add(Task5());
+            tabs.TabPages.Add(Task6());
 
-            this.Controls.Add(tabControl);
+            Controls.Add(tabs);
         }
 
-        // =====================================================
-        // ЗАДАЧА 1: Сумма элементов массива (10 чисел)
-        // =====================================================
-        private TabPage CreateTask1Tab()
+        // Помощник: создаёт вкладку с полем ввода, кнопкой и полем вывода
+        TabPage MakeTab(string title, string btnText, Color color,
+                        out TextBox input, out TextBox output, out Button btn)
         {
-            TabPage tab = new TabPage("Задача 1");
-            tab.BackColor = Color.White;
+            var tab = new TabPage(title) { BackColor = Color.White };
 
-            Label lblTitle = new Label
-            {
-                Text = "Задача 1: Сумма элементов массива (10 чисел)",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
+            input = new TextBox { Location = new Point(20, 20), Size = new Size(500, 25) };
 
-            Label lblInput = new Label
+            btn = new Button
             {
-                Text = "Введите 10 чисел через пробел:",
+                Text = btnText,
                 Location = new Point(20, 55),
-                AutoSize = true
+                Size = new Size(250, 35),
+                BackColor = color
             };
 
-            TextBox txtInput1 = new TextBox
-            {
-                Location = new Point(20, 85),
-                Size = new Size(500, 30)
-            };
-
-            Button btnCalc1 = new Button
-            {
-                Text = "Вычислить сумму",
-                Location = new Point(20, 125),
-                Size = new Size(200, 40),
-                BackColor = Color.LightSteelBlue
-            };
-
-            TextBox txtOutput1 = new TextBox
-            {
-                Location = new Point(20, 180),
-                Size = new Size(680, 300),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            btnCalc1.Click += (sender, e) =>
-            {
-                try
-                {
-                    // Разбиваем строку по пробелам и преобразуем в числа
-                    string[] parts = txtInput1.Text.Trim().Split(
-                        new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (parts.Length != 10)
-                    {
-                        MessageBox.Show("Нужно ввести ровно 10 чисел!", "Ошибка");
-                        return;
-                    }
-
-                    int[] array = new int[10];
-                    for (int i = 0; i < 10; i++)
-                    {
-                        array[i] = int.Parse(parts[i]);
-                    }
-
-                    // Вычисляем сумму
-                    int sum = 0;
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        sum += array[i];
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Массив: " + string.Join(", ", array));
-                    sb.AppendLine();
-                    sb.AppendLine("Пошаговое сложение:");
-                    int runningSum = 0;
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        runningSum += array[i];
-                        sb.AppendLine($"  Шаг {i + 1}: добавляем {array[i]} → текущая сумма = {runningSum}");
-                    }
-                    sb.AppendLine();
-                    sb.AppendLine($"ИТОГО: Сумма всех элементов = {sum}");
-
-                    txtOutput1.Text = sb.ToString();
-                }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Введите корректные целые числа!", "Ошибка");
-                }
-            };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, lblInput, txtInput1, btnCalc1, txtOutput1 });
-            return tab;
-        }
-
-        // =====================================================
-        // ЗАДАЧА 2: Поиск максимума и минимума
-        // =====================================================
-        private TabPage CreateTask2Tab()
-        {
-            TabPage tab = new TabPage("Задача 2");
-            tab.BackColor = Color.White;
-
-            Label lblTitle = new Label
-            {
-                Text = "Задача 2: Максимум и минимум (случайные числа 1–100)",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
-
-            Label lblN = new Label
-            {
-                Text = "Размер массива N:",
-                Location = new Point(20, 55),
-                AutoSize = true
-            };
-
-            NumericUpDown numN = new NumericUpDown
-            {
-                Location = new Point(200, 52),
-                Size = new Size(80, 30),
-                Minimum = 1,
-                Maximum = 100,
-                Value = 10
-            };
-
-            Button btnGen2 = new Button
-            {
-                Text = "Сгенерировать и найти",
-                Location = new Point(300, 47),
-                Size = new Size(230, 40),
-                BackColor = Color.LightGreen
-            };
-
-            TextBox txtOutput2 = new TextBox
+            output = new TextBox
             {
                 Location = new Point(20, 100),
-                Size = new Size(680, 380),
+                Size = new Size(630, 370),
                 Multiline = true,
                 ReadOnly = true,
                 ScrollBars = ScrollBars.Vertical
             };
 
-            btnGen2.Click += (sender, e) =>
-            {
-                int n = (int)numN.Value;
-                Random rnd = new Random();
-
-                int[] array = new int[n];
-                for (int i = 0; i < n; i++)
-                {
-                    array[i] = rnd.Next(1, 101); // от 1 до 100
-                }
-
-                // Поиск максимума и минимума
-                int max = array[0];
-                int min = array[0];
-                int maxIndex = 0;
-                int minIndex = 0;
-
-                for (int i = 1; i < array.Length; i++)
-                {
-                    if (array[i] > max)
-                    {
-                        max = array[i];
-                        maxIndex = i;
-                    }
-                    if (array[i] < min)
-                    {
-                        min = array[i];
-                        minIndex = i;
-                    }
-                }
-
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("Массив:");
-                for (int i = 0; i < array.Length; i++)
-                {
-                    string marker = "";
-                    if (i == maxIndex) marker = " ← MAX";
-                    if (i == minIndex) marker = " ← MIN";
-                    sb.AppendLine($"  [{i}] = {array[i]}{marker}");
-                }
-                sb.AppendLine();
-                sb.AppendLine($"Максимальный элемент: {max} (индекс {maxIndex})");
-                sb.AppendLine($"Минимальный элемент: {min} (индекс {minIndex})");
-
-                txtOutput2.Text = sb.ToString();
-            };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, lblN, numN, btnGen2, txtOutput2 });
+            tab.Controls.AddRange(new Control[] { input, btn, output });
             return tab;
         }
 
-        // =====================================================
-        // ЗАДАЧА 3: Подсчёт чётных и нечётных (foreach)
-        // =====================================================
-        private TabPage CreateTask3Tab()
+        // === ЗАДАЧА 1: Сумма 10 чисел ===
+        TabPage Task1()
         {
-            TabPage tab = new TabPage("Задача 3");
-            tab.BackColor = Color.White;
+            var tab = MakeTab("1. Сумма", "Посчитать сумму", Color.LightSteelBlue,
+                              out var inp, out var outp, out var btn);
+            inp.Text = "5 3 8 1 9 2 7 4 6 10";
 
-            Label lblTitle = new Label
+            btn.Click += (s, e) =>
             {
-                Text = "Задача 3: Чётные и нечётные (15 случайных, 10–50)",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
+                int[] a = Parse(inp.Text);
+                if (a == null || a.Length != 10) { Msg("Введите 10 чисел"); return; }
 
-            Button btnGen3 = new Button
-            {
-                Text = "Сгенерировать и подсчитать",
-                Location = new Point(20, 55),
-                Size = new Size(280, 40),
-                BackColor = Color.LightCoral
-            };
+                int sum = 0;
+                var sb = new StringBuilder("Массив: " + string.Join(", ", a) + "\r\n\r\n");
 
-            TextBox txtOutput3 = new TextBox
-            {
-                Location = new Point(20, 110),
-                Size = new Size(680, 370),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            btnGen3.Click += (sender, e) =>
-            {
-                Random rnd = new Random();
-                int[] array = new int[15];
-
-                for (int i = 0; i < 15; i++)
+                for (int i = 0; i < a.Length; i++)
                 {
-                    array[i] = rnd.Next(10, 51); // от 10 до 50
+                    sum += a[i];
+                    sb.AppendLine($"  + {a[i]} = {sum}");
                 }
-
-                // Подсчёт через foreach
-                int evenCount = 0;
-                int oddCount = 0;
-
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("Массив: " + string.Join(", ", array));
-                sb.AppendLine();
-                sb.AppendLine("Анализ каждого элемента (foreach):");
-
-                foreach (int num in array)
-                {
-                    if (num % 2 == 0)
-                    {
-                        evenCount++;
-                        sb.AppendLine($"  {num} — чётное ✓");
-                    }
-                    else
-                    {
-                        oddCount++;
-                        sb.AppendLine($"  {num} — нечётное ✗");
-                    }
-                }
-
-                sb.AppendLine();
-                sb.AppendLine($"Итого чётных: {evenCount}");
-                sb.AppendLine($"Итого нечётных: {oddCount}");
-
-                txtOutput3.Text = sb.ToString();
+                sb.AppendLine($"\r\nСумма = {sum}");
+                outp.Text = sb.ToString();
             };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, btnGen3, txtOutput3 });
             return tab;
         }
 
-        // =====================================================
-        // ЗАДАЧА 4: Реверс массива
-        // =====================================================
-        private TabPage CreateTask4Tab()
+        // === ЗАДАЧА 2: Максимум и минимум ===
+        TabPage Task2()
         {
-            TabPage tab = new TabPage("Задача 4");
-            tab.BackColor = Color.White;
+            var tab = MakeTab("2. Мин/Макс", "Сгенерировать", Color.LightGreen,
+                              out var inp, out var outp, out var btn);
+            inp.Text = "10";
 
-            Label lblTitle = new Label
+            btn.Click += (s, e) =>
             {
-                Text = "Задача 4: Реверс массива (5 чисел)",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
+                if (!int.TryParse(inp.Text, out int n) || n < 1) { Msg("Введите N"); return; }
 
-            Label lblInput = new Label
-            {
-                Text = "Введите 5 чисел через пробел:",
-                Location = new Point(20, 55),
-                AutoSize = true
-            };
+                var rnd = new Random();
+                int[] a = new int[n];
+                for (int i = 0; i < n; i++) a[i] = rnd.Next(1, 101);
 
-            TextBox txtInput4 = new TextBox
-            {
-                Location = new Point(20, 85),
-                Size = new Size(400, 30)
-            };
-
-            Button btnReverse4 = new Button
-            {
-                Text = "Реверс (новый массив)",
-                Location = new Point(20, 125),
-                Size = new Size(220, 40),
-                BackColor = Color.Khaki
-            };
-
-            Button btnReverseInPlace = new Button
-            {
-                Text = "Реверс (на месте)",
-                Location = new Point(260, 125),
-                Size = new Size(220, 40),
-                BackColor = Color.Gold
-            };
-
-            TextBox txtOutput4 = new TextBox
-            {
-                Location = new Point(20, 180),
-                Size = new Size(680, 300),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            // Способ 1: создаём новый массив
-            btnReverse4.Click += (sender, e) =>
-            {
-                try
+                int max = a[0], min = a[0], maxI = 0, minI = 0;
+                for (int i = 1; i < n; i++)
                 {
-                    string[] parts = txtInput4.Text.Trim().Split(
-                        new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (parts.Length != 5)
-                    {
-                        MessageBox.Show("Нужно ввести ровно 5 чисел!", "Ошибка");
-                        return;
-                    }
-
-                    int[] original = new int[5];
-                    for (int i = 0; i < 5; i++)
-                        original[i] = int.Parse(parts[i]);
-
-                    // Создаём новый массив в обратном порядке
-                    int[] reversed = new int[5];
-                    for (int i = 0; i < 5; i++)
-                    {
-                        reversed[i] = original[4 - i];
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("=== Способ 1: Новый массив ===");
-                    sb.AppendLine();
-                    sb.AppendLine("Исходный массив:    " + string.Join(", ", original));
-                    sb.AppendLine("Обратный массив:    " + string.Join(", ", reversed));
-                    sb.AppendLine();
-                    sb.AppendLine("Как это работает:");
-                    for (int i = 0; i < 5; i++)
-                    {
-                        sb.AppendLine($"  reversed[{i}] = original[{4 - i}] = {original[4 - i]}");
-                    }
-
-                    txtOutput4.Text = sb.ToString();
+                    if (a[i] > max) { max = a[i]; maxI = i; }
+                    if (a[i] < min) { min = a[i]; minI = i; }
                 }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Введите корректные целые числа!", "Ошибка");
-                }
+
+                var sb = new StringBuilder("Массив: " + string.Join(", ", a) + "\r\n\r\n");
+                sb.AppendLine($"Максимум: {max} (индекс {maxI})");
+                sb.AppendLine($"Минимум:  {min} (индекс {minI})");
+                outp.Text = sb.ToString();
             };
-
-            // Способ 2: реверс на месте (без второго массива)
-            btnReverseInPlace.Click += (sender, e) =>
-            {
-                try
-                {
-                    string[] parts = txtInput4.Text.Trim().Split(
-                        new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (parts.Length != 5)
-                    {
-                        MessageBox.Show("Нужно ввести ровно 5 чисел!", "Ошибка");
-                        return;
-                    }
-
-                    int[] array = new int[5];
-                    for (int i = 0; i < 5; i++)
-                        array[i] = int.Parse(parts[i]);
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("=== Способ 2: Реверс на месте ===");
-                    sb.AppendLine();
-                    sb.AppendLine("До реверса: " + string.Join(", ", array));
-                    sb.AppendLine();
-
-                    // Меняем местами элементы с начала и с конца
-                    for (int i = 0; i < array.Length / 2; i++)
-                    {
-                        int temp = array[i];
-                        array[i] = array[array.Length - 1 - i];
-                        array[array.Length - 1 - i] = temp;
-
-                        sb.AppendLine($"  Меняем [{i}] и [{array.Length - 1 - i}]: " +
-                                      string.Join(", ", array));
-                    }
-
-                    sb.AppendLine();
-                    sb.AppendLine("После реверса: " + string.Join(", ", array));
-
-                    txtOutput4.Text = sb.ToString();
-                }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Введите корректные целые числа!", "Ошибка");
-                }
-            };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, lblInput, txtInput4,
-                                                   btnReverse4, btnReverseInPlace, txtOutput4 });
             return tab;
         }
 
-        // =====================================================
-        // ЗАДАЧА 5: Циклический сдвиг вправо
-        // =====================================================
-        private TabPage CreateTask5Tab()
+        // === ЗАДАЧА 3: Чётные / нечётные ===
+        TabPage Task3()
         {
-            TabPage tab = new TabPage("Задача 5");
-            tab.BackColor = Color.White;
+            var tab = MakeTab("3. Чёт/Нечёт", "Сгенерировать", Color.LightCoral,
+                              out var inp, out var outp, out var btn);
+            inp.Visible = false;
 
-            Label lblTitle = new Label
+            btn.Click += (s, e) =>
             {
-                Text = "Задача 5: Циклический сдвиг вправо на 1 позицию",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
+                var rnd = new Random();
+                int[] a = new int[15];
+                for (int i = 0; i < 15; i++) a[i] = rnd.Next(10, 51);
 
-            Label lblInput = new Label
-            {
-                Text = "Введите числа через пробел (любое количество):",
-                Location = new Point(20, 55),
-                AutoSize = true
-            };
+                int even = 0, odd = 0;
+                var sb = new StringBuilder("Массив: " + string.Join(", ", a) + "\r\n\r\n");
 
-            TextBox txtInput5 = new TextBox
-            {
-                Location = new Point(20, 85),
-                Size = new Size(500, 30),
-                Text = "1 2 3 4 5"
-            };
-
-            Button btnShift5 = new Button
-            {
-                Text = "Сдвинуть вправо",
-                Location = new Point(20, 125),
-                Size = new Size(200, 40),
-                BackColor = Color.LightSkyBlue
-            };
-
-            TextBox txtOutput5 = new TextBox
-            {
-                Location = new Point(20, 180),
-                Size = new Size(680, 300),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            btnShift5.Click += (sender, e) =>
-            {
-                try
+                foreach (int x in a)
                 {
-                    string[] parts = txtInput5.Text.Trim().Split(
-                        new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (parts.Length < 2)
-                    {
-                        MessageBox.Show("Введите хотя бы 2 числа!", "Ошибка");
-                        return;
-                    }
-
-                    int[] array = new int[parts.Length];
-                    for (int i = 0; i < parts.Length; i++)
-                        array[i] = int.Parse(parts[i]);
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("До сдвига:    " + string.Join(", ", array));
-                    sb.AppendLine();
-
-                    // Сохраняем последний элемент
-                    int last = array[array.Length - 1];
-                    sb.AppendLine($"Шаг 1: Запоминаем последний элемент: {last}");
-                    sb.AppendLine();
-
-                    // Сдвигаем все элементы вправо на 1, начиная с конца
-                    sb.AppendLine("Шаг 2: Сдвигаем элементы вправо:");
-                    for (int i = array.Length - 1; i > 0; i--)
-                    {
-                        array[i] = array[i - 1];
-                        sb.AppendLine($"  array[{i}] = array[{i - 1}] → " +
-                                      string.Join(", ", array));
-                    }
-
-                    // Ставим последний на первое место
-                    array[0] = last;
-                    sb.AppendLine();
-                    sb.AppendLine($"Шаг 3: Ставим {last} на позицию [0]");
-                    sb.AppendLine();
-                    sb.AppendLine("После сдвига: " + string.Join(", ", array));
-
-                    txtOutput5.Text = sb.ToString();
+                    if (x % 2 == 0) { even++; sb.AppendLine($"  {x} — чётное"); }
+                    else { odd++; sb.AppendLine($"  {x} — нечётное"); }
                 }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Введите корректные целые числа!", "Ошибка");
-                }
+                sb.AppendLine($"\r\nЧётных: {even}, Нечётных: {odd}");
+                outp.Text = sb.ToString();
             };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, lblInput, txtInput5, btnShift5, txtOutput5 });
             return tab;
         }
 
-        // =====================================================
-        // ЗАДАЧА 6: Подсчёт дубликатов
-        // =====================================================
-        private TabPage CreateTask6Tab()
+        // === ЗАДАЧА 4: Реверс ===
+        TabPage Task4()
         {
-            TabPage tab = new TabPage("Задача 6");
-            tab.BackColor = Color.White;
+            var tab = MakeTab("4. Реверс", "Перевернуть", Color.Khaki,
+                              out var inp, out var outp, out var btn);
+            inp.Text = "10 20 30 40 50";
 
-            Label lblTitle = new Label
+            btn.Click += (s, e) =>
             {
-                Text = "Задача 6: Подсчёт дубликатов (10 чисел)",
-                Location = new Point(20, 15),
-                AutoSize = true,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold)
-            };
+                int[] a = Parse(inp.Text);
+                if (a == null || a.Length != 5) { Msg("Введите 5 чисел"); return; }
 
-            Label lblInput = new Label
-            {
-                Text = "Введите 10 чисел через пробел:",
-                Location = new Point(20, 55),
-                AutoSize = true
-            };
+                var sb = new StringBuilder("До:    " + string.Join(", ", a) + "\r\n\r\n");
 
-            TextBox txtInput6 = new TextBox
-            {
-                Location = new Point(20, 85),
-                Size = new Size(500, 30),
-                Text = "3 7 3 2 7 7 1 2 3 5"
-            };
-
-            Button btnCount6 = new Button
-            {
-                Text = "Подсчитать дубликаты",
-                Location = new Point(20, 125),
-                Size = new Size(230, 40),
-                BackColor = Color.Plum
-            };
-
-            TextBox txtOutput6 = new TextBox
-            {
-                Location = new Point(20, 180),
-                Size = new Size(680, 300),
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            btnCount6.Click += (sender, e) =>
-            {
-                try
+                // Реверс на месте
+                for (int i = 0; i < a.Length / 2; i++)
                 {
-                    string[] parts = txtInput6.Text.Trim().Split(
-                        new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (parts.Length != 10)
-                    {
-                        MessageBox.Show("Нужно ввести ровно 10 чисел!", "Ошибка");
-                        return;
-                    }
-
-                    int[] array = new int[10];
-                    for (int i = 0; i < 10; i++)
-                        array[i] = int.Parse(parts[i]);
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Массив: " + string.Join(", ", array));
-                    sb.AppendLine();
-                    sb.AppendLine("Подсчёт вхождений (вложенные циклы):");
-                    sb.AppendLine();
-
-                    // Массив-флаг: уже посчитали это число или нет
-                    bool[] counted = new bool[10];
-
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        // Если это число уже считали — пропускаем
-                        if (counted[i])
-                            continue;
-
-                        int count = 0;
-
-                        // Считаем, сколько раз array[i] встречается во всём массиве
-                        for (int j = 0; j < array.Length; j++)
-                        {
-                            if (array[j] == array[i])
-                            {
-                                count++;
-                                counted[j] = true; // помечаем как посчитанное
-                            }
-                        }
-
-                        // Подбираем правильное слово
-                        string word = "раз";
-                        if (count == 1) word = "раз";
-                        else if (count >= 2 && count <= 4) word = "раза";
-
-                        sb.AppendLine($"  Число {array[i]} встречается {count} {word}");
-                    }
-
-                    txtOutput6.Text = sb.ToString();
+                    int tmp = a[i];
+                    a[i] = a[a.Length - 1 - i];
+                    a[a.Length - 1 - i] = tmp;
+                    sb.AppendLine($"  Меняем [{i}] и [{a.Length - 1 - i}]: {string.Join(", ", a)}");
                 }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Введите корректные целые числа!", "Ошибка");
-                }
+                sb.AppendLine($"\r\nПосле: {string.Join(", ", a)}");
+                outp.Text = sb.ToString();
             };
-
-            tab.Controls.AddRange(new Control[] { lblTitle, lblInput, txtInput6, btnCount6, txtOutput6 });
             return tab;
         }
 
-        // =====================================================
-        // Точка входа
-        // =====================================================
+        // === ЗАДАЧА 5: Сдвиг вправо ===
+        TabPage Task5()
+        {
+            var tab = MakeTab("5. Сдвиг", "Сдвинуть вправо", Color.LightSkyBlue,
+                              out var inp, out var outp, out var btn);
+            inp.Text = "1 2 3 4 5";
+
+            btn.Click += (s, e) =>
+            {
+                int[] a = Parse(inp.Text);
+                if (a == null || a.Length < 2) { Msg("Введите хотя бы 2 числа"); return; }
+
+                var sb = new StringBuilder("До:    " + string.Join(", ", a) + "\r\n\r\n");
+
+                int last = a[a.Length - 1];
+                for (int i = a.Length - 1; i > 0; i--)
+                    a[i] = a[i - 1];
+                a[0] = last;
+
+                sb.AppendLine("После: " + string.Join(", ", a));
+                outp.Text = sb.ToString();
+            };
+            return tab;
+        }
+
+        // === ЗАДАЧА 6: Дубликаты ===
+        TabPage Task6()
+        {
+            var tab = MakeTab("6. Дубликаты", "Подсчитать", Color.Plum,
+                              out var inp, out var outp, out var btn);
+            inp.Text = "3 7 3 2 7 7 1 2 3 5";
+
+            btn.Click += (s, e) =>
+            {
+                int[] a = Parse(inp.Text);
+                if (a == null || a.Length != 10) { Msg("Введите 10 чисел"); return; }
+
+                bool[] done = new bool[10];
+                var sb = new StringBuilder("Массив: " + string.Join(", ", a) + "\r\n\r\n");
+
+                for (int i = 0; i < a.Length; i++)
+                {
+                    if (done[i]) continue;
+                    int count = 0;
+                    for (int j = 0; j < a.Length; j++)
+                    {
+                        if (a[j] == a[i]) { count++; done[j] = true; }
+                    }
+                    sb.AppendLine($"  Число {a[i]} встречается {count} раз(а)");
+                }
+                outp.Text = sb.ToString();
+            };
+            return tab;
+        }
+
+        // --- Вспомогательные методы ---
+        int[] Parse(string text)
+        {
+            try
+            {
+                var parts = text.Trim().Split(new[] { ' ', ',', ';' },
+                            StringSplitOptions.RemoveEmptyEntries);
+                int[] arr = new int[parts.Length];
+                for (int i = 0; i < parts.Length; i++)
+                    arr[i] = int.Parse(parts[i]);
+                return arr;
+            }
+            catch { return null; }
+        }
+
+        void Msg(string text) => MessageBox.Show(text, "Ошибка");
+
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
     }
-}
+} 
